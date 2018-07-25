@@ -1,0 +1,85 @@
+
+<?xml version="1.0" encoding="UTF-8"?>
+<rankingTask id="planet_order">
+  <question>Order the items by increasing distance from the Sun.</question>
+  <numToSelect>8</numToSelect>
+  <background>
+    <src>planet_order_background.html</src>
+  </background>
+  <items>
+    <item id="mercury">
+      <type>image</type>
+      <src>Mercury.png</src>
+      <value>1</value>
+      <!--
+      <label>Mercury</label>
+      <feedback>1</feedback>
+      -->
+    </item>
+    <item id="venus">
+      <type>image</type>
+      <src>Venus.png</src>
+      <value>2</value>
+      <!--
+      <label>Venus</label>
+      <feedback>2</feedback>
+      -->
+    </item>
+    <item id="earth">
+      <type>image</type>
+      <src>Earth.png</src>
+      <value>3</value>
+      <!--
+      <label>Earth</label>
+      <feedback>3</feedback>
+      -->
+    </item>
+    <item id="mars">
+      <type>image</type>
+      <src>Mars.png</src>
+      <value>4</value>
+      <!--
+      <label>Mars</label>
+      <feedback>4</feedback>
+      -->
+    </item>
+  </items>
+  <items>
+    <item id="jupiter">
+      <type>image</type>
+      <src>Jupiter.png</src>
+      <value>5</value>
+      <!--
+      <label>Jupiter</label>
+      <feedback>5</feedback>
+      -->
+    </item>
+    <item id="saturn">
+      <type>image</type>
+      <src>Saturn.png</src>
+      <value>6</value>
+      <!--
+      <label>Saturn</label>
+      <feedback>6</feedback>
+      -->
+    </item>
+    <item id="uranus">
+      <type>image</type>
+      <src>Uranus.png</src>
+      <value>7</value>
+      <!--
+      <label>Uranus</label>
+      <feedback>7</feedback>
+      -->
+    </item>
+    <item id="neptune">
+      <type>image</type>
+      <src>Neptune.png</src>
+      <value>8</value>
+      <!--
+      <label>Neptune</label>
+      <feedback>8</feedback>
+      -->
+    </item>
+  </items>
+</rankingTask>
