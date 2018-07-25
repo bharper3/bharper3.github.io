@@ -1,1 +1,1 @@
-https://bharper3.github.io/rt.html
+https://bharper3.github.io/rt/rt.html
