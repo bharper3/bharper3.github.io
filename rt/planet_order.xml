@@ -1,4 +1,3 @@
-
 <?xml version="1.0" encoding="UTF-8"?>
 <rankingTask id="planet_order">
   <question>Order the items by increasing distance from the Sun.</question>
