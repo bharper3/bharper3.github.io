@@ -1,0 +1,99 @@
+/*
+ * Ranking Task Widget - CSS
+ * astro.unl.edu
+ * v0.0.11 (in active development)
+ * 5 July 2018
+ */
+
+.rt-root-div {
+  border: 1px solid #aaa;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+/*  background-color: lightgreen;*/
+/*  overflow: hidden;*/
+  padding: 0px;
+  margin: 0px;
+}
+
+.rt-inner-div {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.rt-question-p {
+  margin: 1em;
+/*  background-color: lightblue;*/
+}
+
+.rt-items-div {
+  position: relative;
+  margin: 1em;
+/*  background-color: pink;*/
+}
+
+.rt-item-div {
+  position: absolute;
+}
+
+.rt-item-annotation {
+  display: inline-block;
+  position: absolute;
+  transform: translateX(-50%);
+  padding: 0.3em;
+  border: 2px solid #000;
+  background-color: rgba(255, 255, 255, 1.0);
+}
+
+.rt-item-img {
+  width: 100%;
+  height: 100%;
+}
+
+.rt-footer {
+  position: relative;
+  margin: 1em;
+/*  background-color: orange;*/
+}
+
+.rt-footer-left {
+  vertical-align: top;
+  width: 20%;
+  min-height: 1px;
+/*  background-color: #ffaaaa;*/
+  display: inline-block;
+}
+
+.rt-footer-center {
+  vertical-align: top;
+  width: 60%;
+  min-height: 1px;
+/*  background-color: #aaffaa;*/
+  display: inline-block;
+}
+
+.rt-footer-right {
+  vertical-align: top;
+  width: 20%;
+  min-height: 1px;
+/*  background-color: #aaaaff;*/
+  display: inline-block;
+}
+
+.rt-background-button {
+  float: left;
+  margin: 0em;
+}
+
+.rt-feedback {
+  vertical-align: text-top;
+  text-align: center;
+  margin: 0em 1em;
+/*  background-color: lightgray;*/
+}
+
+.rt-grade-button {
+  float: right;
+  margin: 0em;
+}
