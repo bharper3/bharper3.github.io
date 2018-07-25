@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rankingTask id="phase_order">
+  <question>Put the phases of the moon in chronological order, from earliest to latest, starting from new moon.</question>
+  <numToSelect>5</numToSelect>
+  <background>
+    <src>phase_order_background.html</src>
+  </background>
+  <items>
+    <item id="new">
+      <type>image</type>
+      <src>new.png</src>
+      <value>1</value>
+    </item>
+    <item id="waxcres">
+      <type>image</type>
+      <src>waxcres.png</src>
+      <value>2</value>
+    </item>
+    <item id="first">
+      <type>image</type>
+      <src>first.png</src>
+      <value>3</value>
+    </item>
+    <item id="waxgib">
+      <type>image</type>
+      <src>waxgib.png</src>
+      <value>4</value>
+    </item>
+    <item id="full">
+      <type>image</type>
+      <src>full.png</src>
+      <value>5</value>
+    </item>
+    <item id="wangib">
+      <type>image</type>
+      <src>wangib.png</src>
+      <value>6</value>
+    </item>
+    <item id="last">
+      <type>image</type>
+      <src>last.png</src>
+      <value>7</value>
+    </item>
+    <item id="wancres">
+      <type>image</type>
+      <src>wancres.png</src>
+      <value>8</value>
+    </item>
+  </items>
+</rankingTask>
