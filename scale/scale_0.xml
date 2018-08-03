@@ -10,10 +10,8 @@
       <type>image</type>
       <src>Moon_0.png</src>
       <value>1</value>
-      <!--
       <label>Moon</label>
       <feedback>384,400 km</feedback>
-      -->
     </item>
     <item id="venus">
       <type>image</type>
