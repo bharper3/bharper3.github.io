@@ -1,11 +1,13 @@
 /*
  * Ranking Task Widget - CSS
  * astro.unl.edu
- * v0.0.11 (in active development)
- * 5 July 2018
+ * v0.0.14
+ * (in active development)
+ * 1 August 2018
  */
 
 .rt-root-div {
+  font-family: Helvetica, Arial, sans-serif;
   border: 1px solid #aaa;
   box-sizing: border-box;
   width: 100%;
@@ -22,28 +24,76 @@
   height: 100%;
 }
 
-.rt-question-p {
+.rt-question {
   margin: 1em;
+  font-size: 1.15rem;
 /*  background-color: lightblue;*/
 }
 
 .rt-items-div {
+  user-select: none;
+  
   position: relative;
   margin: 1em;
 /*  background-color: pink;*/
 }
 
-.rt-item-div {
+.rt-item-label {
+  margin: 0;
+  user-select: none;
+  display: none;
   position: absolute;
+  transform: translateX(-50%);
+  padding: 0.4em;
+  border: 2px solid #000;
+  background-color: rgba(255, 255, 255, 1.0);
+  z-index: 1;
+  border-radius: 0.35rem;
+  text-align: center;
 }
 
-.rt-item-annotation {
+.rt-item-div {
+  position: absolute;
+  padding: 0;
+}
+
+.rt-item-img-div {
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  z-index: 0;
+}
+
+.rt-item-review-box {
+  display: none;
+  position: absolute;
+  transform: translateX(-50%);
+  padding: 0.6rem;
+  border: 2px solid #000;
+  background-color: white;
+  z-index: 2;
+  border-radius: 0.35rem;
+}
+
+.rt-item-review-feedback {
+  text-align: center;
+  display: inline;
+}
+
+.rt-item-review-order {
+  font-weight: bold;
+  font-size: 1.5rem;
+  text-align: center;
+  width: 100%;
   display: inline-block;
+/*
   position: absolute;
   transform: translateX(-50%);
   padding: 0.3em;
   border: 2px solid #000;
   background-color: rgba(255, 255, 255, 1.0);
+  z-index: 2;
+  */
 }
 
 .rt-item-img {
