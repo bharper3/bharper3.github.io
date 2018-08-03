@@ -1,8 +1,8 @@
 /*
  * Ranking Task Widget - JavaScript
  * astro.unl.edu
- * v0.0.12 (in active development)
- * 9 July 2018
+ * v0.0.15 (in active development)
+ * 2 August 2018
 */
 
 
@@ -11,6 +11,10 @@
  */
 
 function RankingTask(rootElement) {
+
+  // The actual number selected is always limited by the number
+  //  of items available.
+  this.defaultNumToSelect = 5;
 
   // The amount of time an item will take to animate to its rest position may vary
   //  depending on its current distance from that position. Regardless of the formula
@@ -29,9 +33,6 @@ function RankingTask(rootElement) {
   this._rootElement = rootElement;
   this._htmlID = this._rootElement.id;
 
-  // _heightIsRestricted determines whether to limit the height of content.
-  this._heightIsRestricted = (this._rootElement.clientHeight > 0);
-
   // The root div uses border-box sizing to avoid overflow in the iframe player.
   // The inner div makes it easier to account for the root div's border in laying
   //   out the question and items.
@@ -39,8 +40,8 @@ function RankingTask(rootElement) {
   this._innerDiv.className = "rt-inner-div";
   this._rootElement.appendChild(this._innerDiv);
 
-  this._question = document.createElement("p");
-  this._question.className = "rt-question-p";
+  this._question = document.createElement("div");
+  this._question.className = "rt-question";
   this._innerDiv.appendChild(this._question);
   
   this._itemsDiv = document.createElement("div");
@@ -83,6 +84,8 @@ function RankingTask(rootElement) {
   this._backgroundButton.textContent = "Background";
   footerLeft.appendChild(this._backgroundButton);
   
+  this._checkHeightRestriction();
+
   var rt = this;
 
   this._gradeButton.addEventListener("click", function(e) {
@@ -105,6 +108,16 @@ function RankingTask(rootElement) {
   
 }
 
+
+RankingTask.prototype._checkHeightRestriction = function() {
+  // _heightIsRestricted determines whether to limit the height of content.
+  var prevValue = this._heightIsRestricted;
+  this._heightIsRestricted = (this._rootElement.style.height !== "");
+  if (prevValue != this._heightIsRestricted) {
+//    console.log("Change! heightIsRestricted = "+this._heightIsRestricted);
+  }
+  return (prevValue != this._heightIsRestricted);
+};
 
 RankingTask.prototype._openBackground = function() {
   if (this._backgroundSrc !== null) {
@@ -170,6 +183,9 @@ RankingTask.prototype._onXMLLoad = function(rankingTaskID) {
       item.type = itemXML.getElementsByTagName("type")[0].childNodes[0].nodeValue;
       item.value = itemXML.getElementsByTagName("value")[0].childNodes[0].nodeValue;
       item.src = itemXML.getElementsByTagName("src")[0].childNodes[0].nodeValue;
+      item.feedback = itemXML.getElementsByTagName("feedback")[0].childNodes[0].nodeValue;
+      item.label = itemXML.getElementsByTagName("label")[0].childNodes[0].nodeValue;
+//      console.log("item.label");
       items.push(item);
     }
     return items; 
@@ -206,6 +222,7 @@ RankingTask.prototype._onXMLLoad = function(rankingTaskID) {
   this.initWithObject(obj, baseURL); 
 };
 
+
 RankingTask.prototype._reset = function(obj, baseURL) {
 
   this._isReady = false;
@@ -215,16 +232,10 @@ RankingTask.prototype._reset = function(obj, baseURL) {
     baseURL = null;
   }
 
-  this._question.textContent = obj.question;
-
-  // The actual number selected is always limited by the number
-  //  of items available.
-  var defaultNumToSelect = 5;
-
   var numToSelect = parseInt(obj.numToSelect);
   if (Number.isNaN(numToSelect) || numToSelect < 2) {
     // todo: warn if numToSelect is defined but not valid
-    numToSelect = defaultNumToSelect;
+    numToSelect = this.defaultNumToSelect;
   }
 
   var selectedItems = null;
@@ -288,8 +299,6 @@ RankingTask.prototype._reset = function(obj, baseURL) {
     return;
   }
 
-  var allowGrading = true;
-
   // Create and load the selected items.
   this._itemsCountdown = selectedItems.length;
   this._items = [];
@@ -299,12 +308,6 @@ RankingTask.prototype._reset = function(obj, baseURL) {
 
     var context = "rankingTask ID: " + obj.id + ", item ID: " + itemID;
 
-    var itemValue = parseFloat(itemObj.value);
-    if (allowGrading && Number.isNaN(itemValue)) {
-      allowGrading = false;
-      this._reportWarning(context, "Grading is not possible since an item does not have a valid value.");
-    }
-    
     if (itemObj.type == "image") {
       if (itemObj.src === undefined) {
         this._reportException(context, "An image item is missing the required src property.");
@@ -317,9 +320,13 @@ RankingTask.prototype._reset = function(obj, baseURL) {
       } else {
         item = new RTImageItem(this, itemID, itemObj.src);
       }
-      item._rt_value = itemValue;
+      item._rt_key = itemObj.key;
+      item._rt_rawValue = itemObj.value;
+      item._rt_value = parseFloat(itemObj.value);
       item._rt_isAnimating = false;
       item._rt_isBeingDragged = false;
+      item._rt_labelStr = itemObj.label;
+      item._rt_feedbackStr = itemObj.feedback;
       this._items.push(item);
     } else {
       this._reportException(context+", type: \""+itemObj.type+"\"", "An item has an invalid type property.");
@@ -327,33 +334,61 @@ RankingTask.prototype._reset = function(obj, baseURL) {
     }
   }
 
-  var enableBackgroundPage = true;
+  this._feedback.textContent = "";
 
-  if (enableBackgroundPage && obj.background !== undefined && obj.background.src !== undefined) {
+  this._gradeButton.textContent = "Grade";
+  this._answerMode = false;
+
+  this._resetQuestion();
+  this._resetGradeButton();
+  this._resetBackgroundPage();
+};
+
+RankingTask.prototype._resetQuestion = function() {
+  this._question.textContent = this._resetObj.question;
+};
+
+RankingTask.prototype._resetBackgroundPage = function() {
+  // Checks if the background source is defined, and presents a button if so.
+  if (this._resetObj.background !== undefined && this._resetObj.background.src !== undefined) {
     // Enable background page option.
     this._backgroundButton.style.display = "block";
-    if (baseURL !== null) {
-      const urlObj = new URL(obj.background.src, baseURL);
-      this._backgroundSrc = urlObj.toString();
+    if (this._resetBaseURL !== null && this._resetBaseURL !== undefined && this._resetBaseURL !== "") {
+      try {
+        // todo: why did this stop working as expected with base=""?
+        const urlObj = new URL(this._resetObj.background.src, this._resetBaseURL);
+        this._backgroundSrc = urlObj.toString();
+      } catch {
+        console.warn("Creating URL for background button failed.");
+        console.warn(this._resetObj.background.src);
+        console.warn("resetBaseURL: "+this._resetBaseURL + " (" + (typeof this._resetBaseURL) + ")");
+        this._backgroundSrc = null;
+        this._backgroundButton.style.display = "none"; // todo: reevaluate
+      }
     } else {
-      this._backgroundSrc = obj.background.src;
+      this._backgroundSrc = this._resetObj.background.src;
     }
   } else {
      // No background page option.
     this._backgroundButton.style.display = "none";
     this._backgroundSrc = null;
   }
+};
 
-  this._gradeButton.textContent = "Grade";
-  if (allowGrading) {
-    this._gradeButton.disabled = false;
-  } else {
-    this._gradeButton.disabled = true;
+RankingTask.prototype._resetGradeButton = function() {
+  // Looks at every item's value and determines if grading is possible, and if in
+  //  active mode it will set the Grade button's disabled property accordingly.
+  this._gradingIsPossible = true;
+  for (var i = 0; i < this._items.length; ++i) {
+    var itemValue = this._items[i]._rt_value;
+    if (Number.isNaN(itemValue)) {
+      this._gradingIsPossible = false;
+      break;
+    }
   }
-
-  this._feedback.textContent = "";
-
-  this._answerMode = false;
+  if (!this._answerMode) {
+    this._gradeButton.disabled = !this._gradingIsPossible;
+  }
 };
 
 RankingTask.prototype._onGradeButtonClick = function() {
@@ -370,8 +405,24 @@ RankingTask.prototype._onGradeButtonClick = function() {
 
 RankingTask.prototype._grade = function() {
   // todo: revise structure
-  
+ 
+//  console.log("grade");
+
   this._answerMode = true;
+
+  // Hide or show item feedback.
+  for (var i = 0; i < this._items.length; ++i) {
+    var item = this._items[i];
+    if (item._rt_feedbackStr === undefined) {
+      item._rt_feedback.style.display = "none";
+      item._rt_feedback.textContent = "";
+      //item._rt_reviewBox.textContent = "";
+    } else {
+      item._rt_feedback.style.display = "table";
+      item._rt_feedback.textContent = item._rt_feedbackStr;
+      //item._rt_reviewBox.textContent = item._rt_feedbackStr;
+    }
+  }
 
   // Determine the correct order and update the order labels.
   var ordered = this._items.slice(); 
@@ -380,19 +431,19 @@ RankingTask.prototype._grade = function() {
   });
   for (var i = 0; i < ordered.length; ++i) {
     ordered[i]._rt_order = i;
-    ordered[i]._rt_annotation.textContent = (i+1).toString();
-    ordered[i]._rt_annotation.style.display = "block";
+    ordered[i]._rt_orderLabel.textContent = (i+1).toString();
+    ordered[i]._rt_reviewBox.style.display = "table";
   }
 
   // Change the order label's color depending on if it is in
   //  the correct position.
   for (var i = 0; i < this._items.length; ++i) {
     if (this._items[i]._rt_order == i) {
-      this._items[i]._rt_annotation.style.color = "black";
-      this._items[i]._rt_annotation.style.borderColor = "black";
+      this._items[i]._rt_orderLabel.style.color = "black";
+      this._items[i]._rt_reviewBox.style.borderColor = "black";
     } else {
-      this._items[i]._rt_annotation.style.color = "red";
-      this._items[i]._rt_annotation.style.borderColor = "red";
+      this._items[i]._rt_orderLabel.style.color = "red";
+      this._items[i]._rt_reviewBox.style.borderColor = "red";
     }
   }
 
@@ -406,6 +457,180 @@ RankingTask.prototype._grade = function() {
     prevValue = this._items[i]._rt_value;
   }
   this._feedback.textContent = feedbackStr;  
+};
+
+RankingTask.prototype._refreshWithObject = function(obj) {
+
+  // todo: this does not work with bins
+
+  var doFullReset = false;
+  var doResetQuestion = false;
+  var doResetBackgroundPage = false;
+  var doUpdateLabels = false;
+  var valueOrFeedbackHasChanged = false;
+  var doUpdateItemFeedback = false;
+  var doLayoutReset = false;
+
+  if (this._checkHeightRestriction()) {
+    // The layout mode has changed between height being unrestricted and restricted.
+    doFullReset = true;
+  }
+
+  if (this._heightIsRestricted && this._rootElement.style.height !== this._lastRootHeight) {
+    doLayoutReset = true;
+  }
+
+  if (obj.question !== this._resetObj.question) {
+    doResetQuestion = true;
+    if (this._heightIsRestricted) {
+      doLayoutReset = true;
+    } 
+  }
+
+  var n = parseInt(obj.numToSelect);
+  if (!Number.isNaN(n)) {
+    if (n != this._items.length) {
+      doFullReset = true;
+//      console.log("The new numToSelect is valid and different.");
+    }
+  } else if (this.defaultNumToSelect < this._items.length) {
+    // The new numToSelect is undefined, and the number of currently
+    //  selected items is greater than the default.
+    doFullReset = true;
+//    console.log("The new numToSelect is undefined, and the number currently selected is greater than the default.");
+  }
+
+  if (obj.background === undefined) {
+    // new background is undefined
+    if (this._resetObj.background !== undefined) {
+      doResetBackgroundPage = true;
+    }
+  } else if (obj.background.src !== undefined) {
+    // new background.src is defined
+    if (this._resetObj.background === undefined || this._resetObj.background.src !== obj.background.src) {
+      doResetBackgroundPage = true;
+    }
+  } else {
+    // new background.src is undefined
+    if (this._resetObj.background.src !== undefined) {
+      doResetBackgroundPage = true;
+    }
+  }
+
+  function freshItemForKey(key) {
+    for (var i = 0; i < obj.items.length; ++i) {
+      if (obj.items[i].key === key) {
+        return obj.items[i];
+      }
+    }
+    return undefined;
+  }
+
+  // Go through all *currently used* items to see if they have changed.
+  for (var i = 0; i < this._items.length; ++i) {
+    var item = this._items[i];
+    var freshItem = freshItemForKey(item._rt_key);
+    if (freshItem === undefined) {
+      doFullReset = true;
+      break;
+    }
+
+    if (item._rt_rawValue !== freshItem.value) {
+      item._rt_rawValue = freshItem.value;
+      item._rt_value = parseFloat(freshItem.value);
+      valueOrFeedbackHasChanged = true;
+    }
+
+    if (item._rt_labelStr != freshItem.label) {
+      item._rt_labelStr = freshItem.label;
+      doUpdateLabels = true;
+    }
+
+    if (item._rt_feedbackStr != freshItem.feedback) {
+      item._rt_feedbackStr = freshItem.feedback;
+      valueOrFeedbackHasChanged = true;
+    }
+  }
+
+  this._resetObj = this.copyObject(obj);
+
+  if (doFullReset) {
+    this._reset(this._resetObj, this._resetBaseURL);
+  } else {
+    if (doUpdateLabels) {
+      this._updateLabels();
+    }
+    if (valueOrFeedbackHasChanged) {
+      if (this._answerMode) {
+        this._grade();
+      } else {
+        this._resetGradeButton();
+      }
+    }
+    if (doResetBackgroundPage) {
+      this._resetBackgroundPage();
+    }
+    if (doResetQuestion) {
+      this._resetQuestion();
+    }
+    if (doLayoutReset) {
+      this._resetLayout();
+    }
+  }
+
+};
+
+RankingTask.prototype.copyObject = function(obj) {
+
+  function copyItemsList(items) {
+    var itemsCopy = [];
+    if (items !== undefined) {
+      for (var i = 0; i < items.length; ++i) {
+        var item = items[i];
+        var itemCopy = {};
+        itemCopy.key = item.key;
+        itemCopy.id = item.id;
+        itemCopy.name = item.name;
+        itemCopy.type = item.type;
+        itemCopy.value = item.value;
+        itemCopy.label = item.label;
+        itemCopy.feedback = item.feedback;
+        itemCopy.src = item.src;
+        itemsCopy.push(itemCopy);
+      }
+    }
+    return itemsCopy;
+  }
+
+  // Doing this instead of Object.assign to achieve independent copy at all depths, and to make sure
+  //  we copy only the items of interest.
+  var copy = {};
+  copy.name = obj.name;
+  copy.id = obj.id;
+  copy.question = obj.question;
+  copy.numToSelect = obj.numToSelect;
+  if (typeof obj.background === "object") {
+    copy.background = {};
+    if (obj.background.src !== undefined) {
+      copy.background.src = obj.background.src;
+    }
+  }
+  if (obj.items !== undefined) {
+    copy.items = copyItemsList(obj.items);
+  } else if (obj.bins !== undefined) {
+    copy.bins = [];
+    for (var i = 0; i < obj.bins.length; ++i) {
+      var bin = copy.bins[i];
+      var binCopy = {};
+      binCopy.id = bin.id;
+      binCopy.items = copyItemsList(bin.items);
+      copy.bins.push(binCopy);
+    }
+  } else {
+    copy.items = [];
+  }
+
+  return copy;
 };
 
 RankingTask.prototype.initWithObject = function(obj, baseURL) {
@@ -425,10 +650,12 @@ RankingTask.prototype.initWithObject = function(obj, baseURL) {
   //   id (optional) - uniquely identifies the item within the items list
   //   type - valid options: "image"
   //   value (optional) - a number
+  //   label (optional)
+  //   feedback (optional)
   // If type is image then the item is expected to have
   //   src - the url for the image
- 
-  this._resetObj = Object.assign({}, obj);
+
+  this._resetObj = this.copyObject(obj);
   this._resetBaseURL = baseURL;
 
   // todo: revise reset mechanism
@@ -477,11 +704,23 @@ RankingTask.prototype._itemIsReady = function(item) {
   item._rt_element.style.display = "none";
   this._itemsDiv.appendChild(item._rt_element);
 
-  item._rt_annotation = document.createElement("div");
-  item._rt_annotation.className = "rt-item-annotation";
-  item._rt_annotation.textContent = "X";
-  item._rt_annotation.style.display = "none";
-  item._rt_element.appendChild(item._rt_annotation);
+  item._rt_reviewBox = document.createElement("div");
+  item._rt_reviewBox.className = "rt-item-review-box";
+  item._rt_reviewBox.style.display = "none";
+  item._rt_element.appendChild(item._rt_reviewBox);
+
+  item._rt_orderLabel = document.createElement("div");
+  item._rt_orderLabel.className = "rt-item-review-order";
+  item._rt_reviewBox.appendChild(item._rt_orderLabel);
+
+  item._rt_feedback = document.createElement("div");
+  item._rt_feedback.className = "rt-item-review-feedback";
+  item._rt_reviewBox.appendChild(item._rt_feedback);
+
+  item._rt_label = document.createElement("div");
+  item._rt_label.className = "rt-item-label";
+  item._rt_label.textContent = "";
+  item._rt_element.appendChild(item._rt_label);
 
   // Add functions and properties to the item for dragging.
   var rt = this;
@@ -734,7 +973,7 @@ RankingTask.prototype._itemIsReady = function(item) {
 
     // Make items visible.
     for (var i = 0; i < this._items.length; ++i) {
-      this._items[i]._rt_element.style.display = "block";
+      this._items[i]._rt_element.style.display = "inline-block";
     }
 
     this._resetLayout();
@@ -754,7 +993,10 @@ RankingTask.prototype._resetLayout = function() {
   var innerBB = this._innerDiv.getBoundingClientRect();
 
   this._margin = questionBB.left - innerBB.left;
-  
+
+//  console.log("_resetLayout");
+//  console.log("height is restricted: "+this._heightIsRestricted);
+
   // When height is unrestricted the height of itemsDiv is determined later, after
   //  inspecting all the items.
   if (this._heightIsRestricted) {
@@ -797,14 +1039,18 @@ RankingTask.prototype._resetLayout = function() {
   var sideMargin = 1.05*(maxWidth - minWidth);
   var widthAvailable = itemsBB.width - sideMargin - this._margin*(this._items.length - 1);
   var maxWidthScale = widthAvailable/widthSum; 
-  
-  // Determine the scale to use and apply it to all items.
+
+  // Determine the scale.
   var scale = Math.min(maxHeightScale, maxWidthScale);
+  var itemHeights = scale*maxHeight;
+
+  // Apply the scale to all items.
   widthSum = 0.0;
   maxHeight = 0.0;
   for (var i = 0; i < this._items.length; ++i) {
     var item = this._items[i];
-    var element = item._rt_element;
+
+    var element = item._inner; //rt_element;
     var size = item.getRawSize();
     var w = scale*size.width;
     item._rt_halfWidth = w/2.0;
@@ -815,6 +1061,9 @@ RankingTask.prototype._resetLayout = function() {
     element.style.height = h + "px";
     widthSum += w;
     if (h > maxHeight) maxHeight = h;
+    
+    item._rt_element.style.width = w + "px";
+    item._rt_element.style.height = itemHeights + "px";
   }
   widthSum += this._margin*(this._items.length - 1);
 
@@ -833,24 +1082,50 @@ RankingTask.prototype._resetLayout = function() {
   this._itemsMinX = -this.dragMarginIncursion*this._margin;
   this._itemsMaxX = itemsBB.width + this.dragMarginIncursion*this._margin;
   this._itemsHalfRange = (this._itemsMaxX - this._itemsMinX)/2.0;
-  this._itemAnnotionY = ((1.0 - 0.4)*this._itemsMidlineY);
+  this._itemAnnotionY = 0.4*this._itemsMidlineY;
+  this._itemLabelBottom = maxHeight;
 
   // Position the items vertically and initialize z ordering.
   for (var i = 0; i < this._items.length; ++i) {
     var item = this._items[i];
-    var element = item._rt_element;
+    var element = item._inner;//_rt_element;
     var bb = element.getBoundingClientRect();
     var y = this._itemsMidlineY - (bb.height/2.0);
     element.style.top = y + "px";
-    element.style.zIndex = i;
+    item._rt_element.style.zIndex = i;//element.style.zIndex = i;
     item._rt_currCtrY = this._itemsMidlineY;
     item._rt_currY = y;
 
     // Position the order label.
-    item._rt_annotation.style.left = (bb.width/2.0) + "px";
-    item._rt_annotation.style.top = ((bb.height/2.0) - this._itemAnnotionY) + "px";
+    item._rt_reviewBox.style.left = (bb.width/2.0) + "px";
+    item._rt_reviewBox.style.top = "0px";//this._itemAnnotionY + "px";
+    item._rt_reviewBox.style.maxWidth = bb.width + "px";
+
+    item._rt_label.style.maxWidth = 0.75*bb.width + "px";
+    item._rt_label.style.left = (bb.width/2.0) + "px";
+
+
   }
   this._nextZIndex = this._items.length;
+
+  this._updateLabels();
+};
+
+
+RankingTask.prototype._updateLabels = function() {
+  for (var i = 0; i < this._items.length; ++i) {
+    var item = this._items[i];
+    if (item._rt_labelStr !== undefined) {
+      item._rt_label.style.display = "table";
+      item._rt_label.textContent = item._rt_labelStr;
+      var lbb = item._rt_label.getBoundingClientRect();
+      var bb = item._inner.getBoundingClientRect();
+//      item._rt_label.style.top = (this._itemsMidlineY + (bb.height/2.0) - lbb.height) + "px";
+      item._rt_label.style.top = (this._itemLabelBottom - lbb.height) + "px";
+    } else {
+      item._rt_label.style.display = "none";
+    }
+  }
 };
 
 RankingTask.prototype._cancelAllDragging = function() {
@@ -1077,7 +1352,11 @@ function RTImageItem(parent, id, src) {
 
   this._element = document.createElement("div");
   this._element.className = "rt-item-div";
-   
+  
+  this._inner = document.createElement("div");
+  this._inner.className = "rt-item-img-div";
+  this._element.appendChild(this._inner);
+
   this._img = document.createElement("img");
 
   var item = this;
@@ -1089,7 +1368,7 @@ function RTImageItem(parent, id, src) {
   this._img.className = "rt-item-img";
   this._img.src = src;
 
-  this._element.appendChild(this._img);
+  this._inner.appendChild(this._img);
 }
 
 RTImageItem.prototype._onLoad = function(e) {
