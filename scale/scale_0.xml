@@ -10,37 +10,29 @@
       <type>image</type>
       <src>Moon_0.png</src>
       <value>1</value>
-      <!--
       <label>Moon</label>
       <feedback>384,400 km</feedback>
-      -->
     </item>
     <item id="venus">
       <type>image</type>
       <src>Venus_0.png</src>
       <value>1</value>
-      <!--
       <label>Venus</label>
       <feedback>4.2x10^7 km</feedback>
-      -->
     </item>
     <item id="mars">
       <type>image</type>
       <src>Mars_0.png</src>
       <value>1</value>
-      <!--
       <label>Mars</label>
       <feedback>5.6x10^7km</feedback>
-      -->
     </item>
     <item id="mercury">
       <type>image</type>
       <src>Mercury_0.png</src>
       <value>1</value>
-      <!--
       <label>Mercury</label>
       <feedback>9.2x10^7 km</feedback>
-      -->
     </item>
   </items>
   <items>
@@ -48,46 +40,36 @@
       <type>image</type>
       <src>Jupiter_0.png</src>
       <value>2</value>
-      <!--
       <label>Jupiter</label>
       <feedback>6.0x10^8 km</feedback>
-      -->
     </item>
     <item id="saturn">
       <type>image</type>
       <src>Saturn_0.png</src>
       <value>2</value>
-      <!--
       <label>Saturn</label>
       <feedback>1.2x10^9 km</feedback>
-      -->
     </item>
     <item id="uranus">
       <type>image</type>
       <src>Uranus_0.png</src>
       <value>2</value>
-      <!--
       <label>Uranus</label>
       <feedback>2.6x10^9 km</feedback>
-      -->
     </item>
     <item id="neptune">
       <type>image</type>
       <src>Neptune_0.png</src>
       <value>2</value>
-      <!--
       <label>Neptune</label>
       <feedback>4.3x10^9 km</feedback>
-      -->
     </item>
     <item id="pluto">
       <type>image</type>
       <src>Pluto_0.png</src>
       <value>2</value>
-      <!--
       <label>Pluto</label>
       <feedback>4.3x10^9 km</feedback>
-      -->
     </item> 
   </items>
   <items>
@@ -95,19 +77,15 @@
       <type>image</type>
       <src>AlphaCentauri_0.png</src>
       <value>3</value>
-      <!--
       <label>Alpha Centauri</label>
       <feedback>4.36 ly</feedback>
-      -->
     </item>
     <item id="sirius">
       <type>image</type>
       <src>Sirius_0.png</src>
       <value>3</value>
-      <!--
       <label>Sirius</label>
       <feedback>8.58 ly/feedback>
-      -->
     </item>
   </items>
   <items>
@@ -115,19 +93,15 @@
       <type>image</type>
       <src>Polaris_0.png</src>
       <value>4</value>
-      <!--
       <label>Polaris</label>
       <feedback>434 ly</feedback>
-      -->
     </item>
     <item id="antares">
       <type>image</type>
       <src>Antares_0.png</src>
       <value>4</value>
-      <!--
       <label>Antares</label>
       <feedback>604 ly</feedback>
-      -->
     </item>
   </items>
   <items>
@@ -135,19 +109,15 @@
       <type>image</type>
       <src>MilkyWay_0.png</src>
       <value>5</value>
-      <!--
       <label>Center of Milky Way</label>
       <feedback>3.0x10^4 ly</feedback>
-      -->
     </item>
     <item id="m3">
       <type>image</type>
       <src>M3_0.png</src>
       <value>5</value>
-      <!--
       <label>Globular Cluster M3</label>
       <feedback>3.4x10^4 ly</feedback>
-      -->
     </item>
   </items>
   <items>
@@ -155,28 +125,22 @@
       <type>image</type>
       <src>LMC_0.png</src>
       <value>6</value>
-      <!--
       <label>Large Magellanic Cloud</label>
       <feedback>1.4x10^5 ly</feedback>
-      -->
     </item>
     <item id="smc">
       <type>image</type>
       <src>SMC_0.png</src>
       <value>6</value>
-      <!--
       <label>Small Magellanic Cloud</label>
       <feedback>2.0x10^5 ly</feedback>
-      -->
     </item>
     <item id="andromeda">
       <type>image</type>
       <src>Andromeda_0.png</src>
       <value>6</value>
-      <!--
       <label>Andromeda</label>
       <feedback>2.5x10^6 ly</feedback>
-      -->
     </item>
   </items>
   <items>
@@ -184,19 +148,15 @@
       <type>image</type>
       <src>VirgoSuperCluster_0.png</src>
       <value>7</value>
-      <!--
       <label>Virgo Supercluster</label>
       <feedback>6.0x10^7 ly</feedback>
-      -->
     </item>
     <item id="coma">
       <type>image</type>
       <src>ComaSuperCluster_0.png</src>
       <value>7</value>
-      <!--
       <label>Coma SuperCluster</label>
       <feedback>3.7x10^8 ly</feedback>
-      -->
     </item>
   </items>
 </rankingTask>
