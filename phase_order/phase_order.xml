@@ -5,7 +5,7 @@
   <background>
     <src>phase_order_background.html</src>
   </background>
-  <!-- Label and Feedback necessary or useful in this ranking task -->
+  <!-- Label and Feedback necessary or useful in this ranking task? -->
   <items>
     <item id="new">
       <type>image</type>
