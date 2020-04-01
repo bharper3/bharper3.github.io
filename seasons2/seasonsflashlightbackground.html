@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en-US">
+       <link rel="stylesheet" href="background.css">
+<div id="left"></div>
+<div id="right"></div>
+<div id="top"></div>
+<div id="bottom"></div>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Background Information</title>
+<style>
+.sliderwidth
+{
+	width: 180px;
+}
+.smalltext
+{
+font: bold 12px serif; fill: deepskyblue; 
+}
+.bigtext
+{
+font: bold 16px serif; fill: cornsilk; 
+}
+
+</style>
+</head>
+<body>
+  <h1>Seasons</h1>
+<!-- Modified: added user-select: none to avoid text cursor on hover -->
+<div style="user-select: none">
+
+<!-- viewBox attribute defines the coordinate system within the svg -->
+<svg style="position:relative; left:0px; top:0px; background-color:rgb(0,0,0)" width="300" height="250" viewBox="0 0 300 250">
+<!-- horizontal axis -->
+<line x1="25" y1="125" x2="260" y2="125" stroke="deepskyblue" stroke-width="2" stroke-dasharray="10,5"/>
+<!-- vertical axis -->
+<line x1="100" y1="25" x2="100" y2="225" stroke="deepskyblue" stroke-width="2" stroke-dasharray="10,5"/> 
+<text x="250" y="121" class="smalltext">Plane Of</text>
+<text x="250" y="137" class="smalltext">Ecliptic</text>
+
+<!-- Earth axis -- Initially Vertical -->
+<g id="Earth" transform="rotate(0,100,125)">
+    <line x1="100" y1="25" x2="100" y2="225" stroke="cornsilk" stroke-width="3" /> 
+    <!-- draw rotated arrow to suggest rotation  -->
+    <g id="curvyarrow" stroke="cornsilk" stroke-width="2" fill="transparent" >
+        <path d="M 144 170 A 50 12 0 1 0 130 184" />
+        <path d="M 130 184 l -8 -5 m 8 5 l -8 6" />
+    </g>
+	<image href="globe.png" height="100" width="100" x = "50" y = "75" />   
+</g>
+<text id="olabel" x="100" y="20" class="bigtext">23.5°</text>
+<!-- draw arc to axis  -->
+<path id="axarc" stroke="cornsilk" stroke-width="3" fill="transparent" d="M 100 25 A 200 200 0 0 1 140 33" />
+
+</svg> 
+<br \>
+<strong>Obliquity: 0° </strong><input id="tilt" type="range" class="sliderwidth" min="0" max="180" step="0.1" value="23.5" oninput="tilt_earth(this.value)"><strong> 180°</strong><br \>
+
+</div>
+ 
+<script type="text/javascript">
+	var EA = document.getElementById("Earth");
+	var arc = document.getElementById("axarc");
+	var tlabel = document.getElementById("olabel");
+	var tilt, str1, str2, str3, obld, obl2, xl, yl, xa1, ya1, d;
+	var obl=23.5;
+	var transform="rotate(0,100,125)";
+	tilt_earth(obl);
+
+function tilt_earth(obl){
+	tilt=parseFloat(obl).toFixed(1);
+	str1="rotate(";
+	str2=tilt.toString();
+	str3=",100,125)";
+	transform=str1.concat(str2);
+	transform=transform.concat(str3);
+	EA.setAttribute("transform", transform);	
+	obld=str2.concat("°");
+	<!-- determine coordinates for obl label -->
+	obl2=obl/2.0;
+	xl=100+100*Math.sin(obl2*Math.PI/180.0)+3;
+	yl=125-100*Math.cos(obl2*Math.PI/180.0)-3;
+	tlabel.textContent=obld;
+	tlabel.setAttribute("x",xl);
+	tlabel.setAttribute("y",yl);
+	<!-- determine coordinates for obl arc -->
+	xa1=100+100*Math.sin(tilt*Math.PI/180.0);
+	ya1=125-100*Math.cos(tilt*Math.PI/180.0);
+ 	d="M 100 25 A 100 100 0 0 1 X Y";
+ 	d = d.replace("X",xa1.toString());
+	d = d.replace("Y",ya1.toString());
+	arc.setAttribute("d", d);
+}
+    
+</script>
+<p style="position:absolute; left: 330px; top:55px; right:30px"> The term "seasons" is used to describe the variation in temperature that occurs at a given latitude on the Earth over the course of a year. Seasons are due to Earth's axis of rotation being inclined 23.5˚ from the perpendicular to its plane of revolution. This orbital tilt is often referred to as obliquity.<br><br>
+A common misconception is that seasons are due to Earth's distance from the sun varying over a year. This variation is very small and cannot be the cause of seasons. Earth is actually farther from the sun during the northern hemishpere's summer than its winter.</p>
+	
+
+<h1>Sunlight Striking Earth</h1>
+    
+<div>
+
+<!-- viewBox attribute defines the coordinate system within the svg -->
+<svg style="position:relative; left:0px; top:0px; background-color:rgb(0,0,0)" width="400" height="250" viewBox="0 0 400 250">
+   	 <g id="screenspot" transform="translate(-146 -130) skewX(0) translate(146 130)">    
+	     <polygon id="screen" points="110,80 165,85 165,160 110,165" fill="dimgrey" opacity="1.0" />  
+	     <circle id="spot" fill="lightgoldenrodyellow" stroke="none" cx = "138" cy = "122" r = "16" opacity="1.0"/>
+     </g>  
+ <!--    <rect id="beam" x="140" y="107" width="150" height="30" fill="palegoldenrod" stroke="none" opacity="0.3" />	-->
+     <polygon id="beam" points="140,107 141,137 290,137 290,107" fill="palegoldenrod" opacity="0.2" />  
+     <image href="flashlight.png" height="125" width="125" x = "250" y = "60" />   
+	<!-- Draw Thermometer   -->
+	<rect x="0" y="0" width="75" height="250" fill="palegoldenrod" stroke="none" />
+	<path stroke="slategrey" stroke-width="2" fill="transparent" d = "M 25 180 v -150 a 10 10 0 0 1 20 0 v 150 a 25 25 0 1 1 -20 0 Z" /> 
+    <path id="mercury" stroke="tranparent" stroke-width="2" fill="red" d = "M 25 180 v -100 h 20 v 100 a 25 25 0 1 1 -20 0 Z" /> 
+    <path stroke="black" stroke-width="1" fill="tranparent" d = "M 28 170 h 14 m 0 -10 h -14 m 0 -10 h 14 m 0 -10 h -14 m 0 -10 h 14 m 0 -10 h -14 m 0 -10 h 14 m 0 -10 h -14 m 0 -10 h 14 m 0 -10 h -14 m 0 -10 h 14 m 0 -10 h -14 Z"/> 
+	</svg> 
+<br \>
+<div class="bigtext">Paper Angle:&nbsp;<span id="anglevalue" style="display: inline-block; width: 2em">0</span>&nbsp;&nbsp;&nbsp;-60°<input id="tilt" type="range" class="sliderwidth" min="-60" max="60" step="1" value="  0" oninput="tilt_me(this.value)"><strong> 60°</strong><br \>
+</div>
+ 
+<script type="text/javascript">
+	var ang=0; 
+	var angle="  0";
+	var height, d, trans, opacity, points, points2, leftup, leftdown, uppery, lowery;
+	var merc = document.getElementById("mercury");
+	var scrspot = document.getElementById("screenspot");
+	var sspot  = document.getElementById("spot");
+	var sscreen  = document.getElementById("screen");
+	var sbeam  = document.getElementById("beam");
+	var avalue  = document.getElementById("anglevalue");
+	tilt_me(ang);
+
+function tilt_me(angle){
+	ang=parseInt(angle).toFixed(0);
+    angle += "°";
+	avalue.textContent=angle;
+	<!-- set thermometer height -->
+	height=100.0-0.5*Math.abs(ang);
+	d = "M 25 180 v -100 h 20 v 100 a 25 25 0 1 1 -20 0 Z";
+	d = d.replace("100",height.toFixed(0).toString());
+	d = d.replace("100",height.toFixed(0).toString());
+	merc.setAttribute("d", d);
+	<!-- set skew angle in transform -->
+	trans="translate(146 130) skewX(00) translate(-146 -130)";
+	trans=trans.replace("00",ang.toString());
+	scrspot.setAttribute("transform", trans);
+	<!-- set spot opacity as a function of angle -->
+	opacity=1.00-0.007*Math.abs(ang);
+	sspot.setAttribute("opacity", opacity);
+	<!-- control left ending of beam -- treat as trapezoid -->
+	leftup=140-0.7*ang;
+	leftdown=141+0.25*ang;
+	points="140,107 141,137 290,137 290,107";
+	points=points.replace("140",leftup.toFixed(0).toString());
+	sbeam.setAttribute("points", points);
+	points=points.replace("141",leftdown.toFixed(0).toString());
+	sbeam.setAttribute("points", points);
+}
+   
+</script>
+    <p style="position:absolute; left: 425px; top:400px; right:30px"> The interactive figure shown here allows one to explore the idea of sunlight striking Earth at different angles. The tempereature where the beam strikes the surface is provided. When the beam is shining directly onto the surface, its energy is spread out over a small area and the corresponding temperature is high. As the beam strikes the surface at larger angles, the energy is spread out over a larger area and the coreesponding temperature is lower.</p>
+
+    </body>
+        
+</html>
