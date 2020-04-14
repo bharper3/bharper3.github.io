@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="background.css">
+<title>Background Information</title>
+<div id="left"></div>
+<div id="right"></div>
+<div id="top"></div>
+<div id="bottom"></div>
+    <h1>Kepler's 3rd Law Calculator</h1>
+<style>
+.sliderwidth
+{
+	width: 200px;
+}
+.header 
+{ 
+font: bold 30px serif; color: red; text-align: center; 
+}
+.bigprint
+{
+font: bold 20px serif; color: black;  
+}
+.textbox
+{
+border:3px solid #000000;
+resize: none;
+font: bold 20px serif; color: black; text-align: center; 
+height: 20px; width=100px;
+padding: 5px;
+display: inline-block; 
+width: 3em
+}
+.textboxplain
+{
+border:3px solid #FFFFFF;
+resize: none;
+font: bold 20px serif; color: black; text-align: center; 
+height: 20px; width=100px;
+padding: 5px;
+display: inline-block; 
+width: 3em
+}
+.nicetable
+{
+font: bold 20px serif; color: black; text-align: center; 
+margin-left:auto;margin-right:auto;
+}
+</style>
+</head>
+
+<body>
+<div height="300px" width="300px">
+
+<p class="header">P<sup>2</sup> = a<sup>3</sup></p>
+
+<div>
+<!--<p style="text-align:center">(when P is in years and a is in AUs)</p> -->
+<table class="nicetable">
+<tr>
+<td><output id="Pbox" class="textbox">
+164.8
+</output><sup class="bigprint"> 2</sup><span class="bigprint"> = </span></td>
+
+<td><output id="abox" class="textbox">
+30.1
+</output><sup class="bigprint"> 3</sup><span class="bigprint"> =</span></td>
+
+<td><output id="P2box" class="textboxplain">
+27200
+</output><sup class="bigprint">&nbsp;</sup></td>
+</tr>
+</table>
+</div>
+<br \>
+<div>
+<table class="nicetable">
+<tr>
+<td>Period P (years):</td>
+<td>0.1<input id="Pslider" class="sliderwidth" type="range" min="0.1" max="250" step="0.1" value="164.8" oninput="get_P(this.value)">250</td>
+</tr>
+<tr>
+<td>Semi-major Axis a (AU):</td>
+<td>0.1<input id="aslider" class="sliderwidth" type="range" min="0.1" max="40" step="0.1" value="30.1" oninput="get_a(this.value)">40</td>
+</tr>
+<tr><td colspan="2">
+<button type="button" onclick="setEarth()">Earth</button>
+<button type="button" onclick="setMars()">Mars</button>
+<button type="button" onclick="setAsteroid()">Asteroid</button>
+<button type="button" onclick="setJupiter()">Jupiter</button>
+<button type="button" onclick="setNeptune()">Neptune</button>
+</td>
+</tr>
+</table>
+</div>
+</div>
+	
+<script type="text/javascript">
+	var P, a;
+	var Pout = document.getElementById("Pslider");
+	var aout = document.getElementById("aslider");
+	var P2box = document.getElementById("P2box");
+	var Pbox = document.getElementById("Pbox");
+	var abox = document.getElementById("abox");
+	
+function get_P(Pvalue){
+	P = Pvalue;
+	a=Pvalue**0.6667;
+	a=a.toFixed(1);
+	aslider.value=a;
+	abox.value=a
+	Pbox.value=P;
+	P2Stuff(P);
+}
+function get_a(avalue){
+	a = avalue;
+	P = avalue**1.5;
+	P = P.toFixed(1);
+	Pslider.value=P;
+	Pbox.value=P;
+	abox.value=a;
+	P2Stuff(P);
+}
+function setEarth(){
+	a = 1.0;
+	P = 1.0;
+	Pslider.value=P;
+	aslider.value=a;
+	Pbox.value=P.toFixed(1);
+	abox.value=a.toFixed(1);
+	P2Stuff(P);
+}
+function setMars(){
+	a = 1.524;
+	P = 1.88;
+	Pslider.value=P;
+	aslider.value=a;
+	Pbox.value=P.toFixed(1);
+	abox.value=a.toFixed(1);
+	P2Stuff(P);
+}
+function setAsteroid(){
+	a = 4.0;
+	P = 8.0;
+	Pslider.value=P;
+	aslider.value=a;
+	Pbox.value=P.toFixed(1);
+	abox.value=a.toFixed(1);
+	P2Stuff(P);
+}
+function setJupiter(){
+	a = 5.2;
+	P = 11.87;
+	Pslider.value=P;
+	aslider.value=a;
+	Pbox.value=P.toFixed(1);
+	abox.value=a.toFixed(1);
+	P2Stuff(P);
+}
+function setNeptune(){
+	a = 30.1;
+	P = 164.8;
+	Pslider.value=P;
+	aslider.value=a;
+	Pbox.value=P.toFixed(1);
+	abox.value=a.toFixed(1);
+	P2Stuff(P);
+}
+function P2Stuff(P){
+	var P2;
+	P2=P**2.0;
+	if (P2>1000){
+	   P2=Math.round(P2/100)*100;
+	}
+	else if (P2>100){
+	   P2=Math.round(P2/10)*10;
+	   P2=P2.toFixed(1);
+	}
+    else {
+	   P2=P2.toFixed(1);
+	}
+	P2box.value=P2;
+}
+</script>
+	<p>Kepler's third law states that the period (P) of an object orbiting the Sun is equal to the semi-major axis (a) cubed. This is only an equality when "P" is measured in years and "a" in astronomical units.</p>
+</body>
+</html>
