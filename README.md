@@ -6,3 +6,5 @@ https://bharper3.github.io/ecliptic/index.html
 https://bharper3.github.io/seasons2/index.html
 
 https://bharper3.github.io/Kepler2/index.html
+
+https://bharper3.github.io/Kepler3/index.html
