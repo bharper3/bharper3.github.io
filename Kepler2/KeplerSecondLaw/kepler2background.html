@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<link rel="stylesheet" href="background.css">
+<title>Background Information</title>
+<div id="left"></div>
+<div id="right"></div>
+<div id="top"></div>
+<div id="bottom"></div>
+<html lang="en-US">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+.sliderwidth
+{
+	width: 100px;
+}
+.bigprint
+{
+font: bold 16px serif; color: black;  
+}
+</style>
+</head>
+<h1>Kepler's Second Law</h1>
+<body>
+<div>
+<svg width="300" height="300" viewBox="-300 -300 600 600">
+     <rect x="-300" y="-300" width="600" height="600" fill="white" />
+     <path id="rightWedge" d="" stroke="none" fill="rgba(255, 0, 0, 1.0)" />
+     <path id="leftWedge" d="" stroke="none" fill="rgba(0, 0, 255, 1.0)" />
+     <path id="ellipse" d="" stroke="rgba(0, 0, 0, 1.0)" stroke-width="5px" fill="none" />
+     <line id="rWedgeTop" x1="" y1="" x2="" y2="" style="stroke:rgb(0,0,0);stroke-width:2" />
+	 <line id="rWedgeBot" x1="" y1="" x2="" y2="" style="stroke:rgb(0,0,0);stroke-width:2" />
+	 <line id="lWedgeTop" x1="" y1="" x2="" y2="" style="stroke:rgb(0,0,0);stroke-width:2" />
+	 <line id="lWedgeBot" x1="" y1="" x2="" y2="" style="stroke:rgb(0,0,0);stroke-width:2" />
+	 <defs>
+          <radialGradient id="limbDarkening">
+               <stop offset="10%" stop-color="yellow" />
+               <stop offset="95%" stop-color="goldenrod" />
+          </radialGradient>
+     </defs>
+	 <circle id="sun" cx="" cy="" r="10" stroke="black" stroke-width="2" fill="url('#limbDarkening')" />
+     <circle id="planet" cx="" cy="" r="4" stroke="black" stroke-width="2" fill="green" />
+</svg>
+
+<br \>
+<span class=bigprint>
+Eccentricity: <span id="eccvalue" style="display:inline-block; width:2em">0</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.00<input id="slider1" class="sliderwidth" type="range" min="0.00" max="0.70" step="0.01" value="0.50" oninput="drawStuff(this.value)">0.70
+</span>
+</div>
+	
+<script type="text/javascript">
+var ecc=0.0;
+var display = document.getElementById("eccvalue");
+var ellipse = document.getElementById('ellipse');
+var leftWedge = document.getElementById('leftWedge');
+var rightWedge = document.getElementById('rightWedge');
+var sun = document.getElementById('sun');
+var planet = document.getElementById('planet');
+var rWedgeTop = document.getElementById('rWedgeTop');
+var rWedgeBot = document.getElementById('rWedgeBot');
+var lWedgeTop = document.getElementById('lWedgeTop');
+var rWedgeBot = document.getElementById('rWedgeBot');
+drawStuff(ecc);
+
+function drawStuff(ecc) {
+	document.getElementById('slider1').value=ecc;
+ 	display.textContent = ecc;
+	ecc=parseFloat(ecc);
+
+	var angleInDegrees = 10.0;
+
+	var a = 280;
+	var b = Math.sqrt(a*a*(1 - ecc*ecc));
+	var ellipseData = 'M rightX rightY A rx ry 0.0 1 1 leftX leftY A rx ry 0.0 1 1 rightX rightY Z';
+
+    var k1 = Math.sqrt((1+ecc)/(1-ecc));
+	var k2 = a*(1-ecc*ecc);
+
+	var ellipseX = 0.0;
+	var ellipseY = 0.0;
+	
+	var focusX = ellipseX + ecc*a;
+	var focusY = ellipseY;
+
+	// Full Ellipse
+
+	ellipseData = ellipseData.replace(/rightX/g, a);
+	ellipseData = ellipseData.replace(/rightY/g, 0);
+	ellipseData = ellipseData.replace(/leftX/g, -a);
+	ellipseData = ellipseData.replace(/leftY/g, 0);
+	ellipseData = ellipseData.replace(/rx/g, a);
+	ellipseData = ellipseData.replace(/ry/g, b);
+	ellipse.setAttribute('d', ellipseData);
+	
+	// Right Wedge
+
+	var ma = -angleInDegrees*Math.PI/180.0;
+	var ea0 = 0;
+	var ea1 = ma + ecc*Math.sin(ma);
+	var c = 0;
+
+	do {
+		ea0 = ea1;
+		ea1 = ma + ecc*Math.sin(ea0);
+		c++;
+	} while (Math.abs(ea1-ea0)>0.001 && c<100);
+	var ta = 2*Math.atan(k1*Math.tan(ea1/2));
+
+	var r = k2 / (1 + ecc*Math.cos(ta));
+	var startX = focusX + r*Math.cos(ta);	
+	var endX = startX;
+	var startY = focusY + r*Math.sin(ta);	
+	var endY = -startY;
+
+	var rightWedgeData = 'M focusX focusY L startX startY A rx ry 0.0 0 1 endX endY Z';
+	rightWedgeData = rightWedgeData.replace(/focusX/g, focusX);
+	rightWedgeData = rightWedgeData.replace(/focusY/g, focusY);
+	rightWedgeData = rightWedgeData.replace(/startX/g, startX);
+	rightWedgeData = rightWedgeData.replace(/startY/g, startY);
+	rightWedgeData = rightWedgeData.replace(/endX/g, endX);
+	rightWedgeData = rightWedgeData.replace(/endY/g, endY);
+	rightWedgeData = rightWedgeData.replace(/rx/g, a);
+	rightWedgeData = rightWedgeData.replace(/ry/g, b);
+	rightWedge.setAttribute('d', rightWedgeData);
+	rWedgeBot.setAttribute('x1', focusX);
+	rWedgeBot.setAttribute('y1', focusY);
+	rWedgeBot.setAttribute('x2', startX);
+	rWedgeBot.setAttribute('y2', startY);
+	rWedgeTop.setAttribute('x1', focusX);
+	rWedgeTop.setAttribute('y1', focusY);
+	rWedgeTop.setAttribute('x2', endX);
+	rWedgeTop.setAttribute('y2', endY);
+	
+	// Left Wedge
+
+	var ma = (180 - angleInDegrees)*Math.PI/180.0;
+	var ea0 = 0;
+	var ea1 = ma + ecc*Math.sin(ma);
+	var c = 0;
+	do {
+		ea0 = ea1;
+		ea1 = ma + ecc*Math.sin(ea0);
+		c++;
+	} while (Math.abs(ea1-ea0)>0.001 && c<100);
+	var ta = 2*Math.atan(k1*Math.tan(ea1/2));
+
+	var r = k2 / (1 + ecc*Math.cos(ta));
+	var startX = focusX + r*Math.cos(ta);	
+	var endX = startX;
+	var startY = focusY + r*Math.sin(ta);	
+	var endY = -startY;
+
+	var leftWedgeData = 'M focusX focusY L startX startY A rx ry 0.0 0 1 endX endY Z';
+	leftWedgeData = leftWedgeData.replace(/focusX/g, focusX);
+	leftWedgeData = leftWedgeData.replace(/focusY/g, focusY);
+	leftWedgeData = leftWedgeData.replace(/startX/g, startX);
+	leftWedgeData = leftWedgeData.replace(/startY/g, startY);
+	leftWedgeData = leftWedgeData.replace(/endX/g, endX);
+	leftWedgeData = leftWedgeData.replace(/endY/g, endY);
+	leftWedgeData = leftWedgeData.replace(/rx/g, a);
+	leftWedgeData = leftWedgeData.replace(/ry/g, b);
+	leftWedge.setAttribute('d', leftWedgeData);
+	lWedgeBot.setAttribute('x1', focusX);
+	lWedgeBot.setAttribute('y1', focusY);
+	lWedgeBot.setAttribute('x2', startX);
+	lWedgeBot.setAttribute('y2', startY);
+	lWedgeTop.setAttribute('x1', focusX);
+	lWedgeTop.setAttribute('y1', focusY);
+	lWedgeTop.setAttribute('x2', endX);
+	lWedgeTop.setAttribute('y2', endY);
+	
+	// Position Sun and Planet
+	sun.setAttribute('cx', focusX);
+	sun.setAttribute('cy', focusY);
+	planet.setAttribute('cx',endX);
+	planet.setAttribute('cy',endY);
+	
+}    
+</script>
+<p>Kepler's Second Law states that "a line from the sun to a body sweeps out equal areas in equal amounts of time". Thus, if it takes the same amount of time for this object to cover the blue wedge in its orbit as it does the red wedge - then the two wedges must have the same area. This effectively means that objects orbiting the sun must travel fast when they are close to the sun and more slowly when they are far away.</p>	
+</body>
+</html>
