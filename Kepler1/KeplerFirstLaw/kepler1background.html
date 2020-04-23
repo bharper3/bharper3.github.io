@@ -8,6 +8,10 @@
 {
 	width: 200px;
 }
+.label 
+{ 
+font: bold 20px serif; fill: red; 
+}
 .bigprint
 {
 font: bold 20px serif; color: black;  
@@ -24,7 +28,7 @@ font: bold 20px serif; color: black;
 <body>
     <h1>Kepler's First Law</h1>
 
-<p>Kepler's first law states that all planets move in ellipses with the Sun at one focus. An ellipse is the set of points that are equidistant from two special points known as foci. A simple technique for drawing an ellipse is shown.</p>    
+<p>Kepler's first law states that all planets move in ellipses with the Sun at one focus. An ellipse is the set of points that are equidistant from two special points known as foci. A simple technique for drawing an ellipse is shown.</p>
   <img src="data/images/kepler1backgroundimage.png" alt="Kepler 1st Law" width="111px" height="74px" style="display: block; margin-left: auto; margin-right: auto; width: 40% ;height: 40%;"/>
     
     
@@ -69,7 +73,11 @@ function drawEllipse1(ecc) {
     
 <p>To determine the eccentricity of an ellipse we need to use the formula e=c/a. One can determine the semi-major axis "a" by measureing the long axis on an ellipse and dividing by 2. The distance from the center of the ellipse to a focus is represented by "c".</p>   
     
-<svg style="position:relative; left: 0px; top:0px; background-color:rgb(255,255,180)" width="410" height="410" viewBox="0 0 410 410">
+    
+<div>
+
+<!-- viewBox attribute defines the coordinate system within the svg -->
+<svg style="position:relative; left:0px; top:0px; background-color:rgb(255,255,180)" width="410" height="410" viewBox="0 0 410 410">
    <!-- Draw Ellipse  -->
    <ellipse id="ellipse" cx="205" cy="205" rx="100" ry="100" stroke="black" stroke-width="5" fill="gold"/>
    <!-- Draw Foci  -->
@@ -83,25 +91,26 @@ function drawEllipse1(ecc) {
 </svg>
 
 <br \>	
+<span class="bigprint">
 <table>
-<tr><td></td><td>&nbsp;&nbsp;<strong>c</strong>&nbsp;&nbsp;</td><td></td><td><span id=cvalue> 0</span></td><td></td><td></td></tr>
-    <tr><td><strong>Eccentricity: e =</strong></td><td>&ndash;&ndash;&ndash;</td><td>=</td><td>&ndash;&ndash;&ndash;</td><td>=</td><td><span id="evalue">0</span></td></tr>
-<tr><td></td><td>&nbsp;&nbsp;<strong>a</strong>&nbsp;&nbsp;</td><td></td><td><span id=avalue> 50</span></td><td></td></tr>
+<tr><td></td><td>&nbsp;&nbsp;<strong>c</strong>&nbsp;&nbsp;</td><td></td><td><span id=cvalue>&nbsp;20</span></td><td></td><td></td></tr>
+<tr><td>Eccentricity: e =</td><td>&ndash;&ndash;&ndash;</td><td>=</td><td>&ndash;&ndash;&ndash;<td>=</td><td><span id="evalue">0.4</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(e less than 0.9)</td></tr>
+<tr><td></td><td>&nbsp;&nbsp;<strong>a</strong>&nbsp;&nbsp;</td><td></td><td><span id=avalue>&nbsp;50</span></td><td></td></tr>
 </table>
 
-c: 0<input id="sliderc" type="range" class="sliderwidth" min="0" max="90" step="1" value="20" oninput="get_c(this.value)"> 90&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(c must be less than a)<br \>
-a: 10<input id="slidera" type="range" class="sliderwidth" min="10" max="100" step="1" value="50" oninput="get_a(this.value)"> 100<br \>
-<br \>
+c: 0<input id="sliderc" type="range" class="sliderwidth" min="0" max="90" step="1" value="20"> 90&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br \>
+a: 10<input id="slidera" type="range" class="sliderwidth" min="10" max="100" step="1" value="50"> 100<br \>
+</span>
+</div>
 	
 <script type="text/javascript">
 	var rx=80;
 	var ry=80;
 	var cvalue=20;
 	var avalue=50;
-	var evalue=0;
-	var a = 50;
-	var c = 20;
-
+	var evalue=0.4;
+	var elimit=0.9;
+	
     var ellipse = document.getElementById("ellipse");
 	var f1 = document.getElementById("foci1");
 	var f2 = document.getElementById("foci2");
@@ -113,42 +122,43 @@ a: 10<input id="slidera" type="range" class="sliderwidth" min="10" max="100" ste
 	var displayc = document.getElementById("cvalue");
 	var displaye = document.getElementById("evalue");
 	
-function get_a(a){
-	var sliderav = document.getElementById("slidera");
-	a = parseInt(a);
-	avalue=a;
-	if(a<=cvalue){
-	    avalue=cvalue+1;
-		a = cvalue+1;
-		c = cvalue;
-		sliderav.value=avalue;
-	}
-	drawEllipse();
-}	
-function get_c(c){
-	var slidercv = document.getElementById("sliderc");
-	c = parseInt(c);
-	cvalue=c;
-	if(c>=avalue){
-	    cvalue=avalue-1;
-		c = avalue-1;
-		a = avalue;
-		slidercv.value=cvalue;
-	}
-	drawEllipse();
-}	
+	var slidera = document.getElementById("slidera");
+	var sliderc = document.getElementById("sliderc");
+	slidera.addEventListener("input", constraina);
+	sliderc.addEventListener("input", constrainc);
+	
+function constraina(){
+     avalue=slidera.valueAsNumber;
+	 cvalue=sliderc.valueAsNumber;
+	 limit=Math.ceil(cvalue/elimit);
+	 if (avalue<limit) {
+	     slidera.valueAsNumber=limit;
+		 avalue = limit;
+	 }
+     evalue = (cvalue/avalue).toFixed(2);
+	 drawEllipse();
+}
+function constrainc(){
+     avalue=slidera.valueAsNumber;
+	 cvalue=sliderc.valueAsNumber;
+	 limit=Math.floor(avalue*elimit);
+	 if (cvalue>limit) {
+	     sliderc.valueAsNumber=limit;
+		 cvalue = limit;
+	 }
+	 evalue = (cvalue/avalue).toFixed(2);
+	 drawEllipse();
+}
 	
 function drawEllipse() {
 	var flx, f2x, f1lx, f2lx, l1x, l2x, a1x, a2x, d;
 	
 	displaya.textContent = avalue;
 	displayc.textContent = cvalue;
-	ecc=parseFloat(cvalue/avalue);
-	ecc=ecc.toFixed(2);
-	displaye.textContent = ecc;
+	displaye.textContent = evalue;
    
     rx=2.0*avalue;
-	ry=Math.sqrt(rx**2.0*(1-ecc**2.0));
+	ry=Math.sqrt(rx**2.0*(1-evalue**2.0));
 	ry=ry.toFixed(0);
 	ellipse.setAttribute("rx", rx);
 	ellipse.setAttribute("ry", ry);
